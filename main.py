@@ -4,10 +4,13 @@ from pykalman import KalmanFilter
 import lstm
 import transformer
 import time
+import torch
 
 random_state = np.random.RandomState(0)
+torch.manual_seed(0)
 T = 0.01
 step = 200
+
 '''
 Step 1: Provide a de facto system
 '''
@@ -40,17 +43,14 @@ Step 2: Initialize our model
 
 # specify parameters
 transition_matrix = A
-transition_offset = B# + random_state.randn(1, 2) * 1
-observation_matrix = C#[[1,0,0,0,0],[0,1,0,0,0]]# + random_state.randn(1, 2) * 1
-observation_offset = D# + random_state.randn(1, 1) * 1
-transition_covariance = 0.02*np.eye(3)# + random_state.randn(2, 2) * 1
+transition_offset = B
+observation_matrix = C
+observation_offset = D
+transition_covariance = 0.02*np.eye(3)
 observation_covariance = np.eye(1)
-initial_state_mean =[0,0,1]# + random_state.randn(1, 2) * 1
-initial_state_covariance = 5*np.eye(3)#[[1, 0, 0], [0, 0.1, 0],[0,0,0.5]] + random_state.randn(2, 2) * 
-# Q,R,P0：实际<理想
-# EM:Q=0.98Q0,R=0.9R0,m0=0.5m00,P0=0.5P00
-# LSTM:Q=0.74Q0,R=0.04R0,m0=0.2m00,P0=0.3P00
-# TRANF:Q=1.2Q0,R=0.5R0,m0=0.2m00,P0=0.2P00
+initial_state_mean =[0,0,1]
+initial_state_covariance = 5*np.eye(3)
+
 # sample from model
 
 kf = KalmanFilter(
@@ -67,6 +67,7 @@ kf = KalmanFilter(
 data = kf.sample(n_timesteps=step,initial_state=initial_state_mean)[1]
 filtered_state_estimater, nf_cov = kf.filter(observation)
 smoothed_state_estimater, ns_cov = kf.smooth(observation)
+
 '''
 Step 3: Learn good values for parameters named in `em_vars` using the EM algorithm
 '''
@@ -103,8 +104,8 @@ def test(data,method='TL',n_iteration=10):
     t_em = time.process_time()
     print('train-time/sec',t_train-t_start)
     print('em-time/sec',t_em-t_train)
-    Qem = compute_tr(kfem.transition_covariance)#compute_tr(kfem.transition_covariance/(step-1))
-    Rem = compute_tr(kfem.observation_covariance)#compute_tr(kfem.transition_covariance/step) #by simple-EM we know R= [[0.00459097]] #R_T=[[0.09846549]]
+    Qem = compute_tr(kfem.transition_covariance)
+    Rem = compute_tr(kfem.observation_covariance)
     P0em = compute_tr(kfem.initial_state_covariance)
     m0em = [0,0,np.abs(kfem.initial_state_mean[2])]
     print('Q=',Qem)
@@ -120,41 +121,7 @@ def test(data,method='TL',n_iteration=10):
     smoothed_state_estimates, s_cov = kfem.smooth(observation)
     return filtered_state_estimates, f_cov, smoothed_state_estimates, s_cov,labelfilter,labelsmooth
 
-'''
-m0em_lstm = smoothed_state_estimates_lstm[0,:]
-P0em_lstm = s_cov_lstm[0]-np.dot(m0em_lstm,np.transpose(m0em_lstm))
 
-#print(kf1)
-
-loglikelihoods = np.zeros(10)
-for i in range(len(loglikelihoods)):
-    kf1 = kf1.em(X=observations, n_iter=1)
-    loglikelihoods[i] = kf1.loglikelihood(observations.data)
-
-f_covl = []
-s_covl = []
-nf_covl = []
-ns_covl = []
-trainf_covl = []
-trains_covl = []
-for i in range(step):
-    f_covl.append(np.trace(f_cov[i]))
-    s_covl.append(np.trace(s_cov[i]))
-    nf_covl.append(np.trace(nf_cov[i]))
-    ns_covl.append(np.trace(ns_cov[i]))
-    trainf_covl.append(np.trace(f_cov_lstm[i]))
-    trains_covl.append(np.trace(s_cov_lstm[i]))
-
-#filtered_state_estimates1 = kf2.filter(observations)[0]
-#smoothed_state_estimates1 = kf2.smooth(observations)[0]
-plt.figure()
-plt.plot(f_covl, 'r',label='KF')
-plt.plot(s_covl, 'r--',label='KS')
-plt.plot(nf_covl,'g',label='EM-KF')
-plt.plot(ns_covl, 'g--',label='EM-KS')
-plt.plot(trainf_covl, 'b',label='LSTM-KF')
-plt.plot(trains_covl,'b--',label='LSTM-KS')
-'''
 # draw estimates
 filtered_state_estimates, f_cov, smoothed_state_estimates, s_cov, labelfilter,labelsmooth = test(data[:,0],n_iteration=10)
 #print('emkf=',filtered_state_estimates[:,0].tolist())
