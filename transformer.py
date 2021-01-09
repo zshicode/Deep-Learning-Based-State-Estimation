@@ -174,10 +174,8 @@ def train(datas,hidden,sample_size=1,max_len=1,attn_heads = 4,dropout = 0.1,epoc
     datas = datas.reshape(sample_size, max_len, hidden)
     datas = torch.Tensor(datas)
     for e in range(epochtime):
-        # 前向传播
         out = net(datas,mask=None)
         loss = criterion(out, datas)
-        # 反向传播
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
