@@ -5,7 +5,7 @@
 - Kalman Filter requires the true parameters of the model and solves optimal state estimation recursively. Expectation Maximization (EM) algorithm is applicable for estimating the parameters of the model that are not available before Kalman filtering, which is EM-KF algorithm.
 - To improve the preciseness of EM-KF algorithm, the author presents a state estimation method by combining the Long-Short Term Memory network (LSTM), Transformer and EM-KF algorithm in the framework of Encoder-Decoder in Sequence to Sequence (seq2seq). 
 - Simulation on a linear mobile robot model demonstrates that the new method is more accurate.
-- It is **strongly recommended to read the [slides](slides.pdf) in this repository first**, for understanding the details w.r.t. theoretical analysis and experiment in our method.
+- Please read this paper on arXiv: [Incorporating Transformer and LSTM to Kalman Filter with EM algorithm for state estimation](https://arxiv.org/abs/2105.00250), for understanding the details w.r.t. theoretical analysis and experiment in our method.
 
 ## Usage
 
@@ -35,3 +35,13 @@ Integrating Transformer and LSTM to encode observation before filtering, makes i
 2. Transformer, based on multi-head self attention and residual connection, can capture long-term dependency, while LSTM-encoder can model time-series. TL-KF, a combination of Transformer, LSTM and EM-KF, is precise for state estimation in systems with unknown parameters.
 3. Kalman smoother can ameliorate Kalman filter, but in TL-KF, filtering is precise enough. Therefore, after offline training for parameter estimation, KF for online estimation can be adopted.
 
+## Citation
+
+```
+@article{shi2021kalman,
+    author={Zhuangwei Shi},
+    title={Incorporating Transformer and LSTM to Kalman Filter with EM algorithm for state estimation},
+    journal={arXiv preprint arXiv:2105.00250},
+    year={2021},
+}
+```
