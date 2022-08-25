@@ -7,7 +7,7 @@ import time
 import torch
 
 random_state = np.random.RandomState(0)
-torch.manual_seed(0)
+torch.manual_seed(0) # Sets the seed for generating random numbers. Returns a torch.Generator object.
 T = 0.01
 step = 200
 
@@ -156,7 +156,7 @@ lines_filter = plt.scatter(taxis,state[:,0], color='c',label='True')
 lines_filter = plt.plot(taxis,filtered_state_estimater[:,0], 'r',label='KF')
 lines_smoother = plt.plot(taxis,smoothed_state_estimater[:,0], 'r--',label='KS')
 lines_filt = plt.plot(taxis,filtered_state_estimates[:,0], 'b',label=labelfilter)
-lines_smooth = plt.plot(taxis,smoothed_state_estimates[:,0], 'b--',label=labelsmooth)
+lines_smooth = plt.plot(taxis,smoothed_state_estimates[:,0], 'g--',label=labelsmooth)
 plt.xlim(0,step*T)
 plt.xlabel('Time/s')
 plt.ylabel('x/m')
@@ -166,7 +166,7 @@ plt.figure()
 dlines_filter = plt.plot(taxis,filtered_delta_estimater, 'r',label='KF')
 dlines_smoother = plt.plot(taxis,smoothed_delta_estimater, 'r--',label='KS')
 dlines_filt = plt.plot(taxis,filtered_delta_estimates, 'b',label=labelfilter)
-dlines_smooth = plt.plot(taxis,smoothed_delta_estimates, 'b--',label=labelsmooth)
+dlines_smooth = plt.plot(taxis,smoothed_delta_estimates, 'g--',label=labelsmooth)
 #plt.plot(observation[:,0] - state[:,0],color='c')
 plt.xlim(0,step*T)
 plt.xlabel('Time/s')
